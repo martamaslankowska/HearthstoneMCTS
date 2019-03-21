@@ -1,15 +1,18 @@
 package players;
 
+import attacks.Attack;
 import game.Card;
+import attacks.ITargetWhileAttack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static game.Main.CARDS;
 
 
-public abstract class Player {
+public abstract class Player implements ITargetWhileAttack {
 
     private String name;
     private int hp;
@@ -27,6 +30,16 @@ public abstract class Player {
         this.deck = new ArrayList<>();
         this.hand = new ArrayList<>();
         this.warriors = new ArrayList<>();
+    }
+
+    public Player(Player other) {
+        this.name = other.name;
+        this.hp = other.hp;
+        this.punishment = other.punishment;
+        this.mana = other.mana;
+        this.deck = other.deck;
+        this.hand = other.hand;
+        this.warriors = other.warriors;
     }
 
     public String getName() {
@@ -83,13 +96,12 @@ public abstract class Player {
         return name + " (" + hp + " hp)";
     }
 
+
     public void prepareDeck() {
         /* Adding two copies of every card - 20 cards - to the deck */
-        deck.addAll(new ArrayList<Card>(CARDS));
-        deck.addAll(new ArrayList<Card>(CARDS));
+        for (int i=0; i<CARDS.size()*2; i++)
+            deck.add(new Card(CARDS.get(i%CARDS.size()), i));
         Collections.shuffle(deck);
-        for (int i=0; i<deck.size(); i++)
-            deck.get(i).setId(i);
     }
 
     public void hit() {
@@ -101,16 +113,16 @@ public abstract class Player {
             hp -= ++punishment;
     }
 
-    public List<ArrayList<Card>> getPossibleCardsToPlay() {
+    public List<List<Card>> getPossibleCardsToPlay() {
         /* Finding suitable pairs of cards to play */
-        List<ArrayList<Card>> possibleCards = new ArrayList<>();
+        List<List<Card>> possibleCards = new ArrayList<>();
         for(int i=0; i<hand.size()-1; i++) {
             List<Card> subHand = hand.subList(i+1, hand.size());
             for(int j=0; j<subHand.size(); j++) {
                 if (hand.get(i).getMana() + hand.get(j).getMana() <= mana) {
                     Card firstCard = hand.get(i);
                     Card secondCard = hand.get(j);
-                    possibleCards.add(new ArrayList<Card>() {{ add(firstCard); add(secondCard); }});
+                    possibleCards.add(Arrays.asList(firstCard, secondCard));
                 }
             }
         }
@@ -120,10 +132,32 @@ public abstract class Player {
             for(int i=0; i<hand.size()-1; i++) {
                 Card card = hand.get(i);
                 if (card.getMana() <= mana)
-                    possibleCards.add(new ArrayList<Card>() {{ add(card);}});
+                    possibleCards.add(Arrays.asList(card));
             }
         }
         return possibleCards;
     }
+
+    public abstract List<List<Attack>> getPossibleAttacks();
+
+    public abstract List<Card> selectCardsToPlay(List<List<Card>> possibleCardsToPlay);
+
+    public abstract List<Attack> selectAttacksToPlay(Player opponent, List<List<Attack>> possibleAttacks);
+
+    public void attackOpponentsCards(Player opponent, List<Attack> selectedAttacks, boolean verbose) {
+        if (verbose)
+            System.out.println("  attacks:");
+
+    }
+
+    public void playCards(List<Card> selectedCards, boolean verbose) {
+        if (verbose)
+            System.out.println("  played cards: " + selectedCards);
+        if (!selectedCards.isEmpty()) {
+            warriors.addAll(selectedCards);
+            hand.removeAll(selectedCards);
+        }
+    }
+
 
 }

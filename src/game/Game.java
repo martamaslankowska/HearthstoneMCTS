@@ -2,6 +2,9 @@ package game;
 
 import players.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
 
     private Player activePlayer;
@@ -25,7 +28,7 @@ public class Game {
 
 
     private void printActivePlayerState() {
-        System.out.println("ROUND " + (move + 1)/2 + " - move " + move);
+        System.out.println("\nMOVE " + move + " - round: " + (move + 1)/2);
         System.out.println(activePlayer + " turn:");
         System.out.println("  HAND: " + activePlayer.getHand());
         System.out.println("  WARRIORS: " + activePlayer.getWarriors());
@@ -34,12 +37,12 @@ public class Game {
 
     private void preparePlayersBeforeGame() {
         activePlayer.prepareDeck();
-        activePlayer.setHand(activePlayer.getDeck().subList(0, 3));
-        activePlayer.setDeck(activePlayer.getDeck().subList(3, activePlayer.getDeck().size()));
+        activePlayer.setHand(new ArrayList<>(activePlayer.getDeck().subList(0, 3)));
+        activePlayer.setDeck(new ArrayList<>(activePlayer.getDeck().subList(3, activePlayer.getDeck().size())));
 
         inactivePlayer.prepareDeck();
-        inactivePlayer.setHand(inactivePlayer.getDeck().subList(0, 3));
-        inactivePlayer.setDeck(inactivePlayer.getDeck().subList(3, inactivePlayer.getDeck().size()));
+        inactivePlayer.setHand(new ArrayList<>(inactivePlayer.getDeck().subList(0, 4)));
+        inactivePlayer.setDeck(new ArrayList<>(inactivePlayer.getDeck().subList(4, inactivePlayer.getDeck().size())));
     }
 
 
@@ -59,13 +62,12 @@ public class Game {
             if (verbose)
                 printActivePlayerState();
 
+            List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay());
+            activePlayer.playCards(selectedCardsToPlay, true);
             changeActivePlayer();
         }
 
-        Player winner = getWinner();
-        if (verbose)
-            System.out.println(winner + " WINS THE GAME :)");
-        return winner;
+        return getWinner();
     }
 
     private boolean gameFinished() {

@@ -1,8 +1,9 @@
 package game;
 
-public class Card {
+import attacks.ITargetWhileAttack;
 
-    private static int ID = 0;
+public class Card implements ITargetWhileAttack {
+
     private int id;
     private String name;
     private int mana;
@@ -11,11 +12,27 @@ public class Card {
 
 
     public Card(String name, int mana, int attack, int hp) {
-        this.id = ID++;
         this.name = name;
         this.mana = mana;
         this.attack = attack;
         this.hp = hp;
+    }
+
+    public Card(int id, String name, int mana, int attack, int hp) {
+        this(name, mana, attack, hp);
+        this.id = id;
+    }
+
+    public Card(Card other) {
+        this.name = other.name;
+        this.mana = other.mana;
+        this.attack = other.attack;
+        this.hp = other.hp;
+    }
+
+    public Card(Card other, int id) {
+        this(other);
+        this.id = id;
     }
 
     public int getId() {
