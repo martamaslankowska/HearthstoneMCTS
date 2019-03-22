@@ -7,7 +7,7 @@ public abstract class Attack {
     protected Card attacker;
     protected ITargetWhileAttack target;
 
-    public Attack(Card attacker, Card target) {
+    public Attack(Card attacker, ITargetWhileAttack target) {
         this.attacker = attacker;
         this.target = target;
     }
@@ -34,11 +34,12 @@ public abstract class Attack {
     }
 
 
-    public abstract Card attackerAfterAttack();
+
+//    public abstract Card attackerAfterAttack();
 
     public abstract boolean attackerDies();
 
-    public abstract ITargetWhileAttack targetAfterAttack();
+//    public abstract ITargetWhileAttack targetAfterAttack();
 
     public boolean targetDies() {
         return target.getHp() <= attacker.getAttack();

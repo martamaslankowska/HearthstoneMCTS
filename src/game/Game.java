@@ -1,5 +1,6 @@
 package game;
 
+import attacks.Attack;
 import players.Player;
 
 import java.util.ArrayList;
@@ -16,14 +17,6 @@ public class Game {
         this.activePlayer = activePlayer;
         this.inactivePlayer = inactivePlayer;
         this.move = 0;
-    }
-
-    public int getMove() {
-        return move;
-    }
-
-    public void setMove(int move) {
-        this.move = move;
     }
 
 
@@ -61,8 +54,9 @@ public class Game {
 
             if (verbose)
                 printActivePlayerState();
-
+            List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer));
             List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay());
+            activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, true);
             activePlayer.playCards(selectedCardsToPlay, true);
             changeActivePlayer();
         }

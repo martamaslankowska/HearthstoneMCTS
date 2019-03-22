@@ -2,6 +2,8 @@ package game;
 
 import attacks.ITargetWhileAttack;
 
+import java.util.Objects;
+
 public class Card implements ITargetWhileAttack {
 
     private int id;
@@ -24,6 +26,7 @@ public class Card implements ITargetWhileAttack {
     }
 
     public Card(Card other) {
+        this.id = other.id;
         this.name = other.name;
         this.mana = other.mana;
         this.attack = other.attack;
@@ -79,5 +82,21 @@ public class Card implements ITargetWhileAttack {
     @Override
     public String toString() {
         return name + " (" + mana + ") " + attack + "/" + hp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return id == card.id &&
+                mana == card.mana &&
+                attack == card.attack &&
+                name.equals(card.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, mana, attack);
     }
 }

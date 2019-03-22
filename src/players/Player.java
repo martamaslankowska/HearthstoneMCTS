@@ -1,6 +1,7 @@
 package players;
 
 import attacks.Attack;
+import attacks.PlayerAttack;
 import game.Card;
 import attacks.ITargetWhileAttack;
 
@@ -14,13 +15,13 @@ import static game.Main.CARDS;
 
 public abstract class Player implements ITargetWhileAttack {
 
-    private String name;
-    private int hp;
-    private int punishment;
-    private int mana;
-    private List<Card> deck;
-    private List<Card> hand;
-    private List<Card> warriors;
+    protected String name;
+    protected int hp;
+    protected int punishment;
+    protected int mana;
+    protected List<Card> deck;
+    protected List<Card> hand;
+    protected List<Card> warriors;
 
     public Player(String name) {
         this.name = name;
@@ -138,7 +139,7 @@ public abstract class Player implements ITargetWhileAttack {
         return possibleCards;
     }
 
-    public abstract List<List<Attack>> getPossibleAttacks();
+    public abstract List<List<Attack>> getPossibleAttacks(Player opponent);
 
     public abstract List<Card> selectCardsToPlay(List<List<Card>> possibleCardsToPlay);
 
@@ -146,13 +147,46 @@ public abstract class Player implements ITargetWhileAttack {
 
     public void attackOpponentsCards(Player opponent, List<Attack> selectedAttacks, boolean verbose) {
         if (verbose)
-            System.out.println("  attacks:");
+            if (selectedAttacks.isEmpty())
+                System.out.println("    NO ATTACKS");
+            else
+                System.out.println("    ATTACKS:");
 
+        for (int i=0; i<selectedAttacks.size(); i++) {
+            Attack selectedAttack = selectedAttacks.get(i);
+            if (verbose)
+                System.out.println("      " + selectedAttack);
+
+            if (selectedAttack instanceof PlayerAttack) {  // PlayerAttack type
+                opponent.setHp(opponent.getHp() - selectedAttack.getAttacker().getAttack());
+            }
+            else {  // WarriorAttack type of attack
+
+                Card warrior = warriors.get(warriors.indexOf(selectedAttack.getAttacker()));
+                Card opponentsWarrior = opponent.getWarriors().get(opponent.getWarriors().indexOf((Card)selectedAttack.getTarget()));
+
+                if (selectedAttack.attackerDies()){
+                    if (verbose)
+                        System.out.println("      - ally warrior " + warrior.getName() + " died...");
+                    warriors.remove(warrior);
+                }
+                else
+                    warrior.setHp(warrior.getHp() - opponentsWarrior.getAttack());
+
+                if (selectedAttack.targetDies()) {
+                    if (verbose)
+                        System.out.println("      - opponents warrior " + opponentsWarrior.getName() + " died");
+                    opponent.getWarriors().remove(opponentsWarrior);
+                }
+                else
+                    opponentsWarrior.setHp(opponentsWarrior.getHp() - warrior.getAttack());
+            }
+        }
     }
 
     public void playCards(List<Card> selectedCards, boolean verbose) {
         if (verbose)
-            System.out.println("  played cards: " + selectedCards);
+            System.out.println("    PLAYED CARDS: " + selectedCards);
         if (!selectedCards.isEmpty()) {
             warriors.addAll(selectedCards);
             hand.removeAll(selectedCards);
