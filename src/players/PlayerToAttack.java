@@ -23,7 +23,7 @@ public class PlayerToAttack extends Player {
     }
 
     @Override
-    public List<List<Attack>> getPossibleAttacks(Player opponent) {
+    public List<List<Attack>> getPossibleAttacks(Player opponent, int move) {
         return null;
     }
 

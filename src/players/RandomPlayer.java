@@ -4,12 +4,11 @@ import attacks.Attack;
 import attacks.PlayerAttack;
 import attacks.WarriorAttack;
 import game.Card;
+import static game.Main.random;
 
 import java.util.*;
 
 public class RandomPlayer extends Player {
-
-    private static Random random = new Random();
 
     private RandomPlayer() {
 
@@ -22,17 +21,49 @@ public class RandomPlayer extends Player {
     @Override
     public Player deepCopy() {
         RandomPlayer res = new RandomPlayer();
-        return res.modify(res);
+        res.name = name;
+        res.hp = hp;
+        res.punishment = punishment;
+        res.mana = mana;
+
+        res.deck = new ArrayList<>();
+        for (Card card : deck)
+            res.deck.add(new Card(card));
+
+        res.hand = new ArrayList<>();
+        for (Card card : hand)
+            res.hand.add(new Card(card));
+
+        res.warriors = new ArrayList<>();
+        for (Card card : warriors)
+            res.warriors.add(new Card(card));
+
+        return res;
     }
 
-    public RandomPlayer(RandomPlayer other) {
-        super(other);
+    public RandomPlayer(Player other) {
+        this.name = other.name;
+        this.mana = other.mana;
+        this.hp = other.hp;
+        this.punishment = other.punishment;
+
+        this.deck = new ArrayList<>();
+        for (Card card : other.deck)
+            this.deck.add(new Card(card));
+
+        this.hand = new ArrayList<>();
+        for (Card card : other.hand)
+            this.hand.add(new Card(card));
+
+        this.warriors = new ArrayList<>();
+        for (Card card : other.warriors)
+            this.warriors.add(new Card(card));
     }
 
 
     /* Generate one random attack */
     @Override
-    public List<List<Attack>> getPossibleAttacks(Player opponent) {
+    public List<List<Attack>> getPossibleAttacks(Player opponent, int move) {
         /* Prepare copy of the game */
         Player opponentsPlayer = new PlayerToAttack(opponent.name, opponent.hp);
         List<Card> opponentsWarriors = new ArrayList<>();

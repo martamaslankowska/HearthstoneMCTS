@@ -47,15 +47,15 @@ public class Game {
         preparePlayersBeforeGame();
         while (!gameFinished()) {
             move++;
-            activePlayer.setMana(Math.min((move + 1)/2, 10));
+            activePlayer.updateMana(move);
             activePlayer.hit();
             if (gameFinished())
                 break;
 
             if (verbose)
                 printActivePlayerState();
-            List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer));
-            List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay());
+            List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
+            List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
             activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, true);
             activePlayer.playCards(selectedCardsToPlay, true);
             changeActivePlayer();

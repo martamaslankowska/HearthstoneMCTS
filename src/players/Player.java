@@ -96,27 +96,6 @@ public abstract class Player implements ITargetWhileAttack {
 
     public abstract Player deepCopy();
 
-    protected Player modify(Player res) {
-        res.name = name;
-        res.hp = hp;
-        res.punishment = punishment;
-        res.mana = mana;
-
-        res.deck = new ArrayList<>();
-        for (Card card : deck)
-            res.deck.add(new Card(card));
-
-        res.hand = new ArrayList<>();
-        for (Card card : hand)
-            res.hand.add(new Card(card));
-
-        res.warriors = new ArrayList<>();
-        for (Card card : warriors)
-            res.warriors.add(new Card(card));
-
-        return res;
-    }
-
     public void prepareDeck() {
         /* Adding two copies of every card - 20 cards - to the deck */
         for (int i=0; i<CARDS.size()*2; i++)
@@ -135,6 +114,10 @@ public abstract class Player implements ITargetWhileAttack {
         }
     }
 
+    public List<List<Card>> getPossibleCardsToPlay(Player opponent, int move) {
+        return getPossibleCardsToPlay();
+    }
+
     public List<List<Card>> getPossibleCardsToPlay() {
         /* Finding suitable pairs of cards to play */
         List<List<Card>> possibleCards = new ArrayList<>();
@@ -151,7 +134,7 @@ public abstract class Player implements ITargetWhileAttack {
 
         /* If there is no possible pair of cards to play */
         if (possibleCards.isEmpty()) {
-            for(int i=0; i<hand.size()-1; i++) {
+            for(int i=0; i<hand.size(); i++) {
                 Card card = hand.get(i);
                 if (card.getMana() <= mana)
                     possibleCards.add(Arrays.asList(card));
@@ -160,7 +143,7 @@ public abstract class Player implements ITargetWhileAttack {
         return possibleCards;
     }
 
-    public abstract List<List<Attack>> getPossibleAttacks(Player opponent);
+    public abstract List<List<Attack>> getPossibleAttacks(Player opponent, int move);
 
     public abstract List<Card> selectCardsToPlay(List<List<Card>> possibleCardsToPlay);
 
@@ -216,6 +199,10 @@ public abstract class Player implements ITargetWhileAttack {
             warriors.addAll(selectedCards);
             hand.removeAll(selectedCards);
         }
+    }
+
+    public void updateMana(int move) {
+        mana = Math.min((move + 1)/2, 10);
     }
 
 

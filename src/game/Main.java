@@ -5,6 +5,7 @@ import players.RandomPlayer;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Main {
 
@@ -20,6 +21,8 @@ public class Main {
         new Card("Murloc Raider", 1, 2, 1),
         new Card("Oasis Snapjaw", 4, 2, 7)
     );
+
+    public static Random random = new Random();
 
 
     public static void main(String args[]) {
