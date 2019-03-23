@@ -110,8 +110,10 @@ public abstract class Player implements ITargetWhileAttack {
             hand.add(deck.get(0));
             deck.remove(0);
         }
-        else
+        else {
             hp -= ++punishment;
+//            System.out.println("  - HP: " + punishment);
+        }
     }
 
     public List<List<Card>> getPossibleCardsToPlay() {
@@ -120,9 +122,9 @@ public abstract class Player implements ITargetWhileAttack {
         for(int i=0; i<hand.size()-1; i++) {
             List<Card> subHand = hand.subList(i+1, hand.size());
             for(int j=0; j<subHand.size(); j++) {
-                if (hand.get(i).getMana() + hand.get(j).getMana() <= mana) {
+                if (hand.get(i).getMana() + subHand.get(j).getMana() <= mana) {
                     Card firstCard = hand.get(i);
-                    Card secondCard = hand.get(j);
+                    Card secondCard = hand.get(i+j+1);
                     possibleCards.add(Arrays.asList(firstCard, secondCard));
                 }
             }
