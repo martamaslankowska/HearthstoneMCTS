@@ -1,4 +1,4 @@
-package mcts;
+package mctstemplate;
 
 import java.util.Collections;
 import java.util.Comparator;

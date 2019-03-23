@@ -1,4 +1,4 @@
-package mcts;
+package mctstemplate;
 
 public class NonDeterministicNode extends Node{
 }

@@ -1,75 +1,112 @@
 package mcts;
 
+import attacks.Attack;
+import attacks.PlayerAttack;
+import attacks.WarriorAttack;
+import game.Card;
+import players.Player;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-public class Node {
-    State state;
-    Node parent;
-    List<Node> childArray;
+public class Node implements INode {
 
-    public Node() {
-        this.state = new State();
-        childArray = new ArrayList<>();
+    public static int playouts = 10;
+
+    private String id;
+    private INode parentNode;
+    private List<INode> childrenExplored;
+    private List<INode> childrenUnexplored;
+    private int wonPlayouts;
+    private int playedPlayouts;
+    private Player activePlayer;
+    private Player opponentPlayer;
+    private Attack performedAttack;  // attack from parent which result in current node
+    private List<Card> playedCards;  // list of played cards (1 or 2) by parent which result in current node
+
+
+    public Node(String id, INode parentNode, Player activePlayer, Player opponentPlayer) {
+        this.id = id;
+        this.parentNode = parentNode;
+        this.activePlayer = activePlayer;
+        this.opponentPlayer = opponentPlayer;
+
+        this.childrenExplored = new ArrayList<>();
+        this.childrenUnexplored = findAllChildrenNodes();
+        this.wonPlayouts = 0;
+        this.playedPlayouts = 0;
+
+        this.performedAttack = null;
+        this.playedCards = null;
     }
 
-    public Node(State state) {
-        this.state = state;
-        childArray = new ArrayList<>();
+    @Override
+    public String getId() {
+        return id;
     }
 
-    public Node(State state, Node parent, List<Node> childArray) {
-        this.state = state;
-        this.parent = parent;
-        this.childArray = childArray;
+    @Override
+    public INode getParentNode() {
+        return parentNode;
     }
 
-    public Node(Node node) {
-        this.childArray = new ArrayList<>();
-        this.state = new State(node.getState());
-        if (node.getParent() != null)
-            this.parent = node.getParent();
-        List<Node> childArray = node.getChildArray();
-        for (Node child : childArray) {
-            this.childArray.add(new Node(child));
+    public Node(String id, INode parentNode, Player activePlayer, Player opponentPlayer, Attack performedAttack) {
+        this(id, parentNode, activePlayer, opponentPlayer);
+        this.performedAttack = performedAttack;
+    }
+
+    public Node(String id, INode parentNode, Player activePlayer, Player opponentPlayer, List<Card> playedCards) {
+        this(id, parentNode, activePlayer, opponentPlayer);
+        this.playedCards = playedCards;
+    }
+
+    private List<INode> findAllChildrenNodes() {
+        if (!activePlayer.getWarriors().isEmpty()) {  // perform Attack
+           List<INode> childrenPerformingAttack = new ArrayList<>();
+           int idCounter = 0;
+           for (int i=0; i<activePlayer.getWarriors().size(); i++) {
+               for (int j=0; j<(opponentPlayer.getWarriors().size() + 1); j++) {
+                   if (j == 0) { // PlayerAttack
+                       Attack attack = new PlayerAttack(activePlayer.getWarriors().get(i), opponentPlayer);
+                       Player copyOfOpponentPlayer = opponentPlayer.deepCopy();
+                       copyOfOpponentPlayer.setHp(copyOfOpponentPlayer.getHp() - attack.getAttacker().getAttack());
+                       childrenPerformingAttack.add(new Node(id + "." + idCounter, this, activePlayer.deepCopy(),
+                               copyOfOpponentPlayer, attack));
+                   }
+                   else {
+                       Attack attack = new WarriorAttack(activePlayer.getWarriors().get(i), opponentPlayer.getWarriors().get(j - 1));
+                       Player copyOfActivePlayer = activePlayer.deepCopy();
+                       Player copyOfOpponentPlayer = opponentPlayer.deepCopy();
+                       copyOfActivePlayer.performSingleAttack(copyOfOpponentPlayer, attack);
+                       childrenPerformingAttack.add(new Node(id + "." + idCounter, this, activePlayer.deepCopy(),
+                               copyOfOpponentPlayer, attack));
+                   }
+                   idCounter++;
+               }
+           }
+           return childrenPerformingAttack;
+        }
+        else if (!activePlayer.getPossibleCardsToPlay().isEmpty()) {  // play cards
+            List<List<Card>> possibleCardsToPlay = activePlayer.getPossibleCardsToPlay();
+            List<INode> childrenPerformingCardsPlay = new ArrayList<>();
+            for (int i=0; i<possibleCardsToPlay.size(); i++) {
+                Player copyOfActivePlayer = activePlayer.deepCopy();
+                copyOfActivePlayer.playCards(possibleCardsToPlay.get(i), false);
+                childrenPerformingCardsPlay.add(new Node(id + "." + i, this, copyOfActivePlayer,
+                        opponentPlayer.deepCopy(), possibleCardsToPlay.get(i)));
+            }
+            return childrenPerformingCardsPlay;
+        }
+        else { // no more moves to make; change player and hit --> Nondeterministic Node
+            List<Card> activePlayersDeck = activePlayer.getDeck();
+            List<INode> nondeterministicChildren = new ArrayList<>();
+            for (int i=0; i<activePlayersDeck.size(); i++) {
+                nondeterministicChildren.add((INode) new NondeterministicNode(id + "." + i, this,
+                        new Card(activePlayersDeck.get(i)), opponentPlayer.getName()));
+            }
+            return nondeterministicChildren;
         }
     }
 
-    public State getState() {
-        return state;
-    }
 
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public Node getParent() {
-        return parent;
-    }
-
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
-
-    public List<Node> getChildArray() {
-        return childArray;
-    }
-
-    public void setChildArray(List<Node> childArray) {
-        this.childArray = childArray;
-    }
-
-    public Node getRandomChildNode() {
-        int noOfPossibleMoves = this.childArray.size();
-        int selectRandom = (int) (Math.random() * noOfPossibleMoves);
-        return this.childArray.get(selectRandom);
-    }
-
-    public Node getChildWithMaxScore() {
-        return Collections.max(this.childArray, Comparator.comparing(c -> {
-            return c.getState().getVisitCount();
-        }));
-    }
 }

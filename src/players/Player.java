@@ -4,6 +4,7 @@ import attacks.Attack;
 import attacks.PlayerAttack;
 import game.Card;
 import attacks.ITargetWhileAttack;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,8 @@ public abstract class Player implements ITargetWhileAttack {
     protected List<Card> hand;
     protected List<Card> warriors;
 
+    protected Player() {}
+
     public Player(String name) {
         this.name = name;
         this.hp = 20;
@@ -34,13 +37,7 @@ public abstract class Player implements ITargetWhileAttack {
     }
 
     public Player(Player other) {
-        this.name = other.name;
-        this.hp = other.hp;
-        this.punishment = other.punishment;
-        this.mana = other.mana;
-        this.deck = other.deck;
-        this.hand = other.hand;
-        this.warriors = other.warriors;
+        throw new NotImplementedException();
     }
 
     public String getName() {
@@ -97,6 +94,28 @@ public abstract class Player implements ITargetWhileAttack {
         return name + " (" + hp + " hp)";
     }
 
+    public abstract Player deepCopy();
+
+    protected Player modify(Player res) {
+        res.name = name;
+        res.hp = hp;
+        res.punishment = punishment;
+        res.mana = mana;
+
+        res.deck = new ArrayList<>();
+        for (Card card : deck)
+            res.deck.add(new Card(card));
+
+        res.hand = new ArrayList<>();
+        for (Card card : hand)
+            res.hand.add(new Card(card));
+
+        res.warriors = new ArrayList<>();
+        for (Card card : warriors)
+            res.warriors.add(new Card(card));
+
+        return res;
+    }
 
     public void prepareDeck() {
         /* Adding two copies of every card - 20 cards - to the deck */
@@ -184,6 +203,10 @@ public abstract class Player implements ITargetWhileAttack {
                     opponentsWarrior.setHp(opponentsWarrior.getHp() - warrior.getAttack());
             }
         }
+    }
+
+    public void performSingleAttack(Player opponent, Attack attack) {
+        attackOpponentsCards(opponent, Collections.singletonList(attack), false);
     }
 
     public void playCards(List<Card> selectedCards, boolean verbose) {

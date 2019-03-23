@@ -2,24 +2,22 @@ package players;
 
 import attacks.Attack;
 import game.Card;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerToAttack extends Player {
+public class MCTSPlayer extends Player {
 
-    public PlayerToAttack(String name) {
+    private MCTSPlayer() {}
+
+    public MCTSPlayer(String name) {
         super(name);
     }
 
     @Override
     public Player deepCopy() {
-        return null;
-    }
-
-    public PlayerToAttack(String name, int hp) {
-        super(name);
-        this.hp = hp;
+        Player res = new MCTSPlayer();
+        return res.modify(res);
     }
 
     @Override
@@ -36,4 +34,6 @@ public class PlayerToAttack extends Player {
     public List<Attack> selectAttacksToPlay(Player opponent, List<List<Attack>> possibleAttacks) {
         return null;
     }
+
+
 }

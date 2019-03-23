@@ -11,8 +11,18 @@ public class RandomPlayer extends Player {
 
     private static Random random = new Random();
 
+    private RandomPlayer() {
+
+    }
+
     public RandomPlayer(String name) {
         super(name);
+    }
+
+    @Override
+    public Player deepCopy() {
+        RandomPlayer res = new RandomPlayer();
+        return res.modify(res);
     }
 
     public RandomPlayer(RandomPlayer other) {
@@ -71,7 +81,6 @@ public class RandomPlayer extends Player {
         else
             return new ArrayList<>();
     }
-
 
 
 }
