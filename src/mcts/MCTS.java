@@ -16,7 +16,7 @@ import java.util.List;
 public class MCTS{
 
     public static final double C = 0.7;
-    public final int PLAYOUTS_NO = 10;
+    public final int PLAYOUTS_NO = 100;
     public String MCTSPlayerName = "";
 
     private Node rootNode;
@@ -41,18 +41,16 @@ public class MCTS{
             int wins = 0;
             for (int j = 0; j<PLAYOUTS_NO; j++) {
                 Player winner = randomPlayoutSimulation(node);
-                if (winner.getName().equals(node.getActivePlayer().getName()))
+                if (winner.getName().equals(MCTSPlayerName))
                     wins++;
             }
-            if (!node.getActivePlayer().getName().equals(MCTSPlayerName))
-                wins = -wins;
-
             updateNodeScore(node, wins);
 
             // Backpropagation
             backpropagateResults(node, wins);
         }
-        System.out.println("    ...finished " + iterations + " iterations");
+        if (verbose)
+            System.out.println("    ...finished " + iterations + " iterations");
         Node bestRootNodeChild = pickBestRootNodeChild();
         return bestRootNodeChild;
     }
@@ -152,15 +150,17 @@ public class MCTS{
 
 
     private void updateNodeScore(Node nodeToUpdate, int wins) {
+        if (!nodeToUpdate.getActivePlayer().getName().equals(MCTSPlayerName))
+            wins = -wins;
         nodeToUpdate.setWonPlayouts(nodeToUpdate.getWonPlayouts() + wins);
         nodeToUpdate.setPlayedPlayouts(nodeToUpdate.getPlayedPlayouts() + PLAYOUTS_NO);
     }
 
     private void backpropagateResults(Node nodeWhichMadePlayouts, int wins) {
-        Node parentNode = (Node) nodeWhichMadePlayouts.getParentNode();
+        Node parentNode = nodeWhichMadePlayouts.getParentNode();
         while (parentNode != null) {
             updateNodeScore(parentNode, wins);
-            parentNode = (Node) parentNode.getParentNode();
+            parentNode = parentNode.getParentNode();
         }
     }
 

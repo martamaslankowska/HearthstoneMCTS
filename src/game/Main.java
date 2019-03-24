@@ -23,7 +23,7 @@ public class Main {
         new Card("Oasis Snapjaw", 4, 2, 7)
     );
 
-    public static Random random = new Random();
+    public static Random random = new Random(42);
 
 
     public static void main(String args[]) {

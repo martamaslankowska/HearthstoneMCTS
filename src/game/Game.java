@@ -56,8 +56,8 @@ public class Game {
                 printActivePlayerState();
             List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
             List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
-            activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, true);
-            activePlayer.playCards(selectedCardsToPlay, true);
+            activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, verbose);
+            activePlayer.playCards(selectedCardsToPlay, verbose);
             changeActivePlayer();
         }
 
