@@ -16,12 +16,12 @@ public class Tests {
         int plays = 40;
 
         for (int i=0; i<plays; i++) {
-            Player firstPlayer = new RandomPlayer("Random player");
-            Player secondPlayer = new MCTSPlayer("MCTS player");
+            Player randomPlayer = new RandomPlayer("Random player");
+            Player MCTSPlayer = new MCTSPlayer("MCTS player");
 
-            Game game = new Game(firstPlayer, secondPlayer);
+            Game game = new Game(randomPlayer, MCTSPlayer);
             Player winner = game.gamePlay(false);
-            if (winner == secondPlayer)
+            if (winner == MCTSPlayer)
                 wins += 1;
             System.out.println(winner + " wins the game");
         }
