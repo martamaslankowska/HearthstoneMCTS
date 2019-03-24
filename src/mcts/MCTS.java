@@ -29,6 +29,8 @@ public class MCTS{
 
     public Node mcts(int iterations, boolean verbose) {
         for (int i=0; i<iterations; i++) {
+//            System.out.println("    // iteration " + i);
+
             // Selection
             Node nodeToExpand = selectChild();
 
@@ -50,6 +52,7 @@ public class MCTS{
             // Backpropagation
             backpropagateResults(node, wins);
         }
+        System.out.println("    ...finished " + iterations + " iterations");
         Node bestRootNodeChild = pickBestRootNodeChild();
         return bestRootNodeChild;
     }
@@ -58,11 +61,12 @@ public class MCTS{
     private Node selectChild() {
         Node nodeToExpand = rootNode;
 
-        while (!nodeToExpand.getChildrenUnexplored().isEmpty()) { // while node doesn't have unvisited children
+        while (!nodeToExpand.getChildrenExplored().isEmpty() && nodeToExpand.getChildrenUnexplored().isEmpty()) { // while node doesn't have unvisited children
             nodeToExpand = selectBestChild(nodeToExpand);
             if (nodeToExpand.getPerformedCards() != null) { // NondeterministicNode - pick random child and go further
-                nodeToExpand.setChildrenUnexplored(nodeToExpand.findAllChildrenNodes());
-                nodeToExpand = (Node) nodeToExpand.getChildrenUnexplored().get(random.nextInt(nodeToExpand.getChildrenUnexplored().size()));
+                if (nodeToExpand.getChildrenExplored().isEmpty() && nodeToExpand.getChildrenUnexplored().isEmpty())
+                    nodeToExpand.setChildrenExplored(nodeToExpand.findAllChildrenNodes());
+                nodeToExpand = nodeToExpand.getChildrenExplored().get(random.nextInt(nodeToExpand.getChildrenExplored().size()));
             }
         }
         return nodeToExpand;

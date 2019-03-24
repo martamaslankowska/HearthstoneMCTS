@@ -149,14 +149,21 @@ public class Node {
     }
 
     public List<Node> findAllChildrenNodes() {
-        if (!activePlayer.getWarriors().isEmpty() && performedCards == null) {  // perform Attack
+        // Get all ready to attack warriors
+        List<Card> activePlayersWarriors = new ArrayList<>();
+        if (!activePlayer.getWarriors().isEmpty()) {
+            for (Card warrior : activePlayer.getWarriors())
+                if (warrior.isBeforeAttack())
+                    activePlayersWarriors.add(warrior);
+        }
+
+        if (!activePlayersWarriors.isEmpty() && performedCards == null) {  // perform Attack
            List<Node> childrenPerformingAttack = new ArrayList<>();
            int idCounter = 0;
-           for (int i=0; i<activePlayer.getWarriors().size(); i++) {
+           for (int i=0; i<activePlayersWarriors.size(); i++) {
+               activePlayersWarriors.get(i).setBeforeAttack(false);
+               Card attacker = new Card(activePlayersWarriors.get(i));
                for (int j=0; j<(opponentPlayer.getWarriors().size() + 1); j++) {
-                   Card attacker = activePlayer.getWarriors().get(i);
-                   attacker.setBeforeAttack(false);
-//                   activePlayersInactiveWarriors.add(attacker);
                    if (j == 0) { // PlayerAttack
                        Attack attack = new PlayerAttack(attacker, opponentPlayer);
                        Player copyOfOpponentPlayer = opponentPlayer.deepCopy();
@@ -192,6 +199,9 @@ public class Node {
         else { // no more moves to make; change player and hit --> 'Nondeterministic Node'
             int newActivePlayersMove = move + 1;
 
+            for (Card warrior : opponentPlayer.getWarriors())
+                warrior.setBeforeAttack(true);
+
             List<Card> newActivePlayersDeck = opponentPlayer.deepCopy().getDeck();
             List<Node> nondeterministicChildren = new ArrayList<>();
             for (int i=0; i<newActivePlayersDeck.size(); i++) {
@@ -214,7 +224,7 @@ public class Node {
                 newActivePlayer.setPunishment(++emptyDeckPunishment);
                 newActivePlayer.setHp(newActivePlayer.getHp() - emptyDeckPunishment);
                 nondeterministicChildren.add(new Node(id + ".0", newActivePlayersMove, this,
-                        newActivePlayer, newOpponentPlayer));
+                        newActivePlayer, newOpponentPlayer, new Card("Empty deck punishment", 0, 0, 0)));
             }
             return nondeterministicChildren;
         }

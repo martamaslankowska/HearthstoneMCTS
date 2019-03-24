@@ -49,9 +49,12 @@ public class MCTSPlayer extends Player {
 
     @Override
     public List<List<Attack>> getPossibleAttacks(Player opponent, int move) {
+        for (Card warrior : warriors)
+            warrior.setBeforeAttack(true);
+
         List<Attack> possibleAttacks = new ArrayList<>();
         currentRootNode = new Node("0", move, null, this, opponent);
-        while (currentRootNode.getPerformedCards() == null) {
+        while (currentRootNode.getPerformedCards() == null && currentRootNode.getPerformedHit() == null) {
             tree = new MCTS(this.getName(), move, currentRootNode);
             Node bestChildNode = tree.mcts(MCTSIterations, false);
             if (bestChildNode.getPerformedAttack() != null) {
@@ -65,9 +68,13 @@ public class MCTSPlayer extends Player {
 
     @Override
     public List<List<Card>> getPossibleCardsToPlay(Player opponent, int move) {
-        tree = new MCTS(this.getName(), move, currentRootNode);
-        Node bestChildNode = tree.mcts(MCTSIterations, false);
-        return Arrays.asList(bestChildNode.getPerformedCards());
+        if (currentRootNode.getPerformedHit() == null) {
+//            tree = new MCTS(this.getName(), move, currentRootNode);
+//            Node bestChildNode = tree.mcts(MCTSIterations, false);
+            return Arrays.asList(currentRootNode.getPerformedCards());
+        }
+        else
+            return Arrays.asList(new ArrayList<Card>());
     }
 
     @Override
