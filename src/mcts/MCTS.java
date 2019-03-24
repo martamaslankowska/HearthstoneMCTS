@@ -6,11 +6,16 @@ import players.Player;
 import players.RandomPlayer;
 
 import static game.Main.random;
+import static java.lang.Math.log;
+import static java.lang.Math.sqrt;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MCTS{
 
+    public static final double C = 0.7;
     public final int PLAYOUTS_NO = 10;
     public String MCTSPlayerName = "";
 
@@ -34,10 +39,10 @@ public class MCTS{
             int wins = 0;
             for (int j = 0; j<PLAYOUTS_NO; j++) {
                 Player winner = randomPlayoutSimulation(node);
-                if (winner.getName() == node.getActivePlayer().getName())
+                if (winner.getName().equals(node.getActivePlayer().getName()))
                     wins++;
             }
-            if (node.getActivePlayer().getName() != MCTSPlayerName)
+            if (!node.getActivePlayer().getName().equals(MCTSPlayerName))
                 wins = -wins;
 
             updateNodeScore(node, wins);
@@ -54,22 +59,33 @@ public class MCTS{
         Node nodeToExpand = rootNode;
 
         while (!nodeToExpand.getChildrenUnexplored().isEmpty()) { // while node doesn't have unvisited children
-            nodeToExpand = selectBestNode(nodeToExpand.getChildrenExplored());
-            if (nodeToExpand.getPerformedHit() != null) { // NondeterministicNode - pick random and go further
+            nodeToExpand = selectBestChild(nodeToExpand);
+            if (nodeToExpand.getPerformedCards() != null) { // NondeterministicNode - pick random child and go further
+                nodeToExpand.setChildrenUnexplored(nodeToExpand.findAllChildrenNodes());
                 nodeToExpand = (Node) nodeToExpand.getChildrenUnexplored().get(random.nextInt(nodeToExpand.getChildrenUnexplored().size()));
             }
         }
         return nodeToExpand;
     }
 
-    private Node selectBestNode(List<INode> visitedChildren) {
-        return null;
+    private Node selectBestChild(Node parent) {
+        List<Node> visitedChildren = parent.getChildrenExplored();
+        return visitedChildren.stream()
+                .max(Comparator.comparing(child -> calculateUCT(parent, child)))
+                .orElseThrow(() -> new AssertionError("visitedChildren cannot be empty"));
+    }
+
+    private static double calculateUCT(Node parent, Node child) {
+        return (double) child.getWonPlayouts() / child.getPlayedPlayouts() + C * sqrt(2 * log(parent.getPlayedPlayouts()) / child.getPlayedPlayouts());
     }
 
     private Node expandUnexploredChild(Node nodeToExpand) {
         if (nodeToExpand.getChildrenExplored().isEmpty() && nodeToExpand.getChildrenUnexplored().isEmpty())
             nodeToExpand.setChildrenUnexplored(nodeToExpand.findAllChildrenNodes());
-        return (Node) nodeToExpand.getChildrenUnexplored().get(0); // select childrenNode to expand
+        Node selectedChildToExplore = nodeToExpand.getChildrenUnexplored().get(0);
+        nodeToExpand.getChildrenExplored().add(selectedChildToExplore);
+        nodeToExpand.getChildrenUnexplored().remove(selectedChildToExplore);
+        return selectedChildToExplore; // selected childrenNode to expand
     }
 
     private Player randomPlayoutSimulation(Node node) {
@@ -77,23 +93,27 @@ public class MCTS{
         RandomPlayer inactivePlayer = new RandomPlayer(node.getOpponentPlayer());
         int move = node.getMove();
 
-        if (!node.getActivePlayersInactiveWarriors().isEmpty()) {
-            if (activePlayer.getWarriors().size() > node.getActivePlayersInactiveWarriors().size()) { // attack
-                for (int i=0; i<node.getActivePlayersInactiveWarriors().size(); i++) // remove inactive warriors
-                    activePlayer.getWarriors().remove(node.getActivePlayersInactiveWarriors().get(i));
-                // attack
-                List<List<Attack>> attacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
-                activePlayer.attackOpponentsCards(inactivePlayer, attacks.get(0), false);
-            }
-            // play cards
-            List<List<Card>> cardsToPlay = activePlayer.getPossibleCardsToPlay();
-            activePlayer.playCards(activePlayer.selectCardsToPlay(cardsToPlay), false);
-
-            // Change active player - swap players
-            RandomPlayer deactivatedPlayer = activePlayer;
-            activePlayer = inactivePlayer;
-            inactivePlayer = deactivatedPlayer;
+        // Find all warriors which are able to attack in this round
+        List<Card> warriorsBeforeAttack = new ArrayList<>();
+        for (Card warrior : activePlayer.getWarriors()) {
+            if (warrior.isBeforeAttack())
+                warriorsBeforeAttack.add(warrior);
         }
+
+        // Attack
+        if (!warriorsBeforeAttack.isEmpty()) {
+            List<List<Attack>> possibleAttacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
+            activePlayer.attackOpponentsCards(inactivePlayer, activePlayer.selectAttacksToPlay(inactivePlayer, possibleAttacks), false);
+        }
+        // Play cards
+        List<List<Card>> cardsToPlay = activePlayer.getPossibleCardsToPlay();
+        activePlayer.playCards(activePlayer.selectCardsToPlay(cardsToPlay), false);
+
+        // Change active player - swap players
+        RandomPlayer tmpPlayer = activePlayer;
+        activePlayer = inactivePlayer;
+        inactivePlayer = tmpPlayer;
+
 
         while(getWinner(activePlayer, inactivePlayer) == null) {
             move++;

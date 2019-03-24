@@ -88,6 +88,13 @@ public abstract class Player implements ITargetWhileAttack {
         this.warriors = warriors;
     }
 
+    public int getPunishment() {
+        return punishment;
+    }
+
+    public void setPunishment(int punishment) {
+        this.punishment = punishment;
+    }
 
     @Override
     public String toString() {

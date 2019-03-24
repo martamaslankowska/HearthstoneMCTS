@@ -11,6 +11,7 @@ public class Card implements ITargetWhileAttack {
     private int mana;
     private int attack;
     private int hp;
+    private boolean beforeAttack;  // indicates whether warrior has attacked yet in this round or is he able to attack
 
 
     public Card(String name, int mana, int attack, int hp) {
@@ -18,6 +19,7 @@ public class Card implements ITargetWhileAttack {
         this.mana = mana;
         this.attack = attack;
         this.hp = hp;
+        this.beforeAttack = true;
     }
 
     public Card(int id, String name, int mana, int attack, int hp) {
@@ -31,6 +33,7 @@ public class Card implements ITargetWhileAttack {
         this.mana = other.mana;
         this.attack = other.attack;
         this.hp = other.hp;
+        this.beforeAttack = other.beforeAttack;
     }
 
     public Card(Card other, int id) {
@@ -78,6 +81,13 @@ public class Card implements ITargetWhileAttack {
         this.hp = hp;
     }
 
+    public boolean isBeforeAttack() {
+        return beforeAttack;
+    }
+
+    public void setBeforeAttack(boolean beforeAttack) {
+        this.beforeAttack = beforeAttack;
+    }
 
     @Override
     public String toString() {

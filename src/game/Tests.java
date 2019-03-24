@@ -1,6 +1,5 @@
 package game;
 
-import mcts.INode;
 import mcts.Node;
 import players.Player;
 import players.RandomPlayer;
@@ -54,19 +53,19 @@ public class Tests {
         Node node = new Node(move, activePlayer, opponentPlayer);
         node.setChildrenUnexplored(node.findAllChildrenNodes());
 
-        List<INode> children = node.getChildrenUnexplored();
-        for (INode child : children)
+        List<Node> children = node.getChildrenUnexplored();
+        for (Node child : children)
             System.out.println(child);
 
-        List<INode> childrenOfChildren = ((Node)children.get(0)).findAllChildrenNodes();
+        List<Node> childrenOfChildren = ((Node)children.get(0)).findAllChildrenNodes();
         ((Node)children.get(0)).setChildrenUnexplored(childrenOfChildren);
         System.out.println("\nFirst child children:");
-        for (INode child : childrenOfChildren)
+        for (Node child : childrenOfChildren)
             System.out.println(child);
 
 //        ((Node)children.get(1)).setChildrenUnexplored(((Node)children.get(1)).findAllChildrenNodes());
 //        System.out.println("\nSecond child children:");
-//        for (INode child : ((Node)children.get(1)).getChildrenUnexplored())
+//        for (Node child : ((Node)children.get(1)).getChildrenUnexplored())
 //            System.out.println(child);
 
     }
