@@ -1,5 +1,6 @@
 package game;
 
+import players.AggressivePlayer;
 import players.MCTSPlayer;
 import players.Player;
 import players.RandomPlayer;
@@ -28,7 +29,8 @@ public class Main {
 
     public static void main(String args[]) {
         Player firstPlayer = new RandomPlayer("Random player");
-        Player secondPlayer = new MCTSPlayer("MCTS player");
+//        Player secondPlayer = new MCTSPlayer("MCTS player");
+        Player secondPlayer = new AggressivePlayer("Aggressive player");
 
         Game game = new Game(firstPlayer, secondPlayer);
         Player winner = game.gamePlay(true);
