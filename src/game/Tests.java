@@ -1,6 +1,7 @@
 package game;
 
 import mcts.Node;
+import players.AggressivePlayer;
 import players.MCTSPlayer;
 import players.Player;
 import players.RandomPlayer;
@@ -13,22 +14,40 @@ public class Tests {
 
     public static void main(String args[]) {
         int wins = 0;
-        int plays = 40;
+        int plays = 25;
+        Player testedPlayer = null;
 
         for (int i=0; i<plays; i++) {
             Player randomPlayer = new RandomPlayer("Random player");
             Player MCTSPlayer = new MCTSPlayer("MCTS player");
+            Player aggressivePlayer = new AggressivePlayer("Aggressive player");
+            Player aggressiveOpponent = new AggressivePlayer("Aggressive opponent");
 
-            Game game = new Game(randomPlayer, MCTSPlayer);
+            testedPlayer = aggressiveOpponent;
+
+            Game game = new Game(aggressiveOpponent, aggressivePlayer);
             Player winner = game.gamePlay(false);
-            if (winner == MCTSPlayer)
+            
+            if (winner == testedPlayer)
                 wins += 1;
-            System.out.println(winner + " wins the game");
+            System.out.println((i+1) + ". " + winner + " wins the game");
         }
 
-        System.out.println("\n\nMCTS won " + wins + "/" + plays + " times");
+        System.out.println("\n\n" + testedPlayer.getName() + " won " + wins + "/" + plays + " times");
 
     }
+
+    /*
+    * STATISTICS
+    *
+    * Random vs. MCTS - 60%
+    * MCTS vs. RANDOM - 80%
+    *
+    * MCTS vs. Aggressive - 35-40% (from 500 to 2000 iterations & 100 playouts)
+    * MCTS vs. Aggressive - 75-80% (2000 iterations & 100 playouts; having cards with smaller mana)
+    * Aggressive vs. Aggressive - 80-90% (cards with smaller mana)
+    *
+    * */
 
 //    public static void testMCTSFindingChildNodes(int move, Player activePlayer, Player opponentPlayer) {
 //        Node node = new Node(move, activePlayer, opponentPlayer);

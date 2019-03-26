@@ -28,8 +28,12 @@ public class MCTS{
 
 
     public Node mcts(int iterations, boolean verbose) {
+        Node deepestNode = rootNode;
+        int level = 0;
+
         for (int i=0; i<iterations; i++) {
-//            System.out.println("    // iteration " + i);
+            if (verbose)
+                System.out.println("    // iteration " + (i+1));
 
             // Selection
             Node nodeToExpand = selectChild();
@@ -45,13 +49,38 @@ public class MCTS{
                     wins++;
             }
             updateNodeScore(node, wins);
+            if (verbose)
+                System.out.println(node);
+
+//            // TMP
+//            int l = 0;
+//            Node tmp = node;
+//            while(!tmp.getId().equals(rootNode.getId())) {
+//                l++;
+//                tmp = tmp.getParentNode();
+//            }
+//            if (l > level) {
+//                deepestNode = node;
+//                l = level;
+//            }
 
             // Backpropagation
+
             backpropagateResults(node, wins);
         }
         if (verbose)
             System.out.println("    ...finished " + iterations + " iterations");
         Node bestRootNodeChild = pickBestRootNodeChild();
+
+
+//        System.out.println("\nDeepest node:");
+//        while(deepestNode != null) {
+//            System.out.println(deepestNode);
+//            deepestNode = deepestNode.getParentNode();
+//        }
+//        System.out.println("Best node:\n" + bestRootNodeChild + "\n");
+
+
         return bestRootNodeChild;
     }
 

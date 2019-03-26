@@ -20,7 +20,6 @@ public class Node {
     private int playedPlayouts;
     private Player activePlayer;
     private Player opponentPlayer;
-//    private List<Card> activePlayersInactiveWarriors;  // warriors that already attacked somebody in current move
     private Card performedHit;  // hit which result in current node ~ parent: NondeterministicNode
     private Attack performedAttack;  // attack from parent which result in current node
     private List<Card> performedCards;  // list of played cards (1 or 2) by parent which result in current node
@@ -73,6 +72,30 @@ public class Node {
         this(id, move, parentNode, activePlayer, opponentPlayer);
         this.performedHit = hit;
     }
+
+//    public Node(Node other) {
+//        this.id = other.id;
+//        this.move = other.move;
+//        this.parentNode = new Node(other.parentNode);
+//        this.activePlayer = other.activePlayer.deepCopy();
+//        this.opponentPlayer = other.opponentPlayer.deepCopy();
+//
+//        this.childrenExplored = new ArrayList<>();
+//        for (Node child : other.childrenExplored)
+//            this.childrenExplored.add(new Node(child));
+//
+//        this.childrenUnexplored = new ArrayList<>();
+//        for (Node child : other.childrenUnexplored)
+//            this.childrenUnexplored.add(new Node(child));
+//
+//        this.wonPlayouts = other.wonPlayouts;
+//        this.playedPlayouts = other.playedPlayouts;
+//
+//        this.performedHit = other.performedHit;
+//        this.performedAttack = other.performedAttack;
+//        this.performedCards = other.performedCards;
+//
+//    }
 
 
     public String getId() {
@@ -184,7 +207,7 @@ public class Node {
            }
            return childrenPerformingAttack;
         }
-        else if (!activePlayer.getPossibleCardsToPlay().isEmpty()) {  // play cards
+        else if (!activePlayer.getPossibleCardsToPlay().isEmpty() && performedCards == null) {  // play cards
             List<List<Card>> possibleCardsToPlay = activePlayer.getPossibleCardsToPlay();
             List<Node> childrenPerformingCardsPlay = new ArrayList<>();
             for (int i=0; i<possibleCardsToPlay.size(); i++) {

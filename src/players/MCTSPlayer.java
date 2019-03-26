@@ -20,7 +20,7 @@ public class MCTSPlayer extends Player {
     public MCTSPlayer(String name) {
         super(name);
         this.currentRootNode = new Node(this);
-        this.MCTSIterations = 200;
+        this.MCTSIterations = 1000;
     }
 
     @Override

@@ -21,7 +21,7 @@ public class Game {
 
 
     private void printActivePlayerState() {
-        System.out.println("\nMOVE " + move + " - round: " + (move + 1)/2);
+        System.out.println("\nMOVE " + move + " - " + activePlayer.getMana() + "\u27E1");
         System.out.println(activePlayer + " turn:");
         System.out.println("  HAND: " + activePlayer.getHand());
         System.out.println("  WARRIORS: " + activePlayer.getWarriors());
