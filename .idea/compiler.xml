@@ -10,12 +10,12 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="HearthstoneMCTS" target="1.11" />
+      <module name="HearthstoneMCTS" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="HearthstoneMCTS" options="--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED" />
+      <module name="HearthstoneMCTS" options="" />
     </option>
   </component>
 </project>

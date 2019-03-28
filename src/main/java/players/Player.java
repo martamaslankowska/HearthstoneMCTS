@@ -4,7 +4,7 @@ import attacks.Attack;
 import attacks.PlayerAttack;
 import game.Card;
 import attacks.ITargetWhileAttack;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+//import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public abstract class Player implements ITargetWhileAttack {
     }
 
     public Player(Player other) {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 
     public String getName() {
