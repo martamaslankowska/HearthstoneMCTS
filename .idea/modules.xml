@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WZSI_Hearthstone_JAVA.iml" filepath="$PROJECT_DIR$/WZSI_Hearthstone_JAVA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HearthstoneMCTS.iml" filepath="$PROJECT_DIR$/HearthstoneMCTS.iml" />
     </modules>
   </component>
 </project>

@@ -1,9 +1,7 @@
 package game;
 
-import players.AggressivePlayer;
-import players.MCTSPlayer;
-import players.Player;
-import players.RandomPlayer;
+import mcts.MCTSPlayoutHeuristic;
+import players.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,10 +29,11 @@ public class Main {
 
     public static void main(String args[]) {
         Player random = new RandomPlayer("Random player");
-        Player MCTS = new MCTSPlayer("MCTS player");
+        Player MCTS = new MCTSPlayer("MCTS player",1000,100, MCTSPlayoutHeuristic.RANDOM);
         Player aggressive = new AggressivePlayer("Aggressive player");
+        Player controlling= new ControllingPlayer("Controlling player");
 
-        Game game = new Game(MCTS, aggressive);
+        Game game = new Game(controlling, random);
         Player winner = game.gamePlay(true);
         System.out.println("\n" + winner + " WINS THE GAME :)");
 
