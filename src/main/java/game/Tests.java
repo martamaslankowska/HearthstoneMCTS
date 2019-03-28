@@ -11,8 +11,33 @@ import static game.Main.CARDS;
 
 public class Tests {
 
-    public final static int ITERATIONS_NUMBER=300;
+    public final static int ITERATIONS_NUMBER=1000;
     public final static int PLAYOUTS_NUMBER=100;
+
+    public static void simpleTests() {
+
+        int wins = 0;
+        int iterations = 25;
+        Player testedPlayer = null;
+
+        for (int i=0; i<iterations; i++) {
+            Player random = new RandomPlayer("Random player");
+            Player MCTS = new MCTSPlayer("MCTS player", 1000, 100, MCTSPlayoutHeuristic.RANDOM);
+            Player aggressive = new AggressivePlayer("Aggressive player");
+            Player controlling = new ControllingPlayer("Controlling player");
+
+            testedPlayer = MCTS;
+
+            Game game = new Game(MCTS, controlling);
+            Player winner = game.gamePlay(false);
+            if (winner == testedPlayer)
+                wins++;
+            System.out.println((i+1) + ". " + winner + " WINS THE GAME :)");
+        }
+
+        System.out.println("\n" + testedPlayer.getName() + " won " + wins + "/" + iterations + " times");
+    }
+
 
     public static void main(String args[]) {
 

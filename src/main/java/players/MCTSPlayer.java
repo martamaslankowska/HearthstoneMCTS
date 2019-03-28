@@ -65,6 +65,18 @@ public class MCTSPlayer extends Player {
             if (bestChildNode.getPerformedAttack() != null) {
                 Attack attack = bestChildNode.getPerformedAttack();
                 possibleAttacks.add(attack);
+
+//                System.out.println("\n    MCTS ATTACK:");
+//                int best = 0;
+//                for (int i=0; i<currentRootNode.getChildrenExplored().size(); i++) {
+//                    Node child = currentRootNode.getChildrenExplored().get(i);
+//                    double stats = (double) child.getWonPlayouts() / child.getPlayedPlayouts();
+//                    System.out.println("    --> " + (i+1) + ". " + child.getPerformedAttack() + " | " + child.getWonPlayouts() + "/" + child.getPlayedPlayouts() + " = " + stats);
+//                    if (bestChildNode == child)
+//                        best = i;
+//                }
+//                System.out.println("    BEST: " + (best+1) + ". " + bestChildNode.getPerformedAttack());
+
             }
             currentRootNode = bestChildNode;
         }
@@ -74,8 +86,19 @@ public class MCTSPlayer extends Player {
     @Override
     public List<List<Card>> getPossibleCardsToPlay(Player opponent, int move) {
         if (currentRootNode.getPerformedHit() == null) {
-//            tree = new MCTS(this.getName(), move, currentRootNode);
-//            Node bestChildNode = tree.mcts(MCTSIterations, false);
+
+//            System.out.println("\n    MCTS CARDS TO PLAY:");
+//            int best = 0;
+//            for (int i=0; i<currentRootNode.getParentNode().getChildrenExplored().size(); i++) {
+//                Node child = currentRootNode.getParentNode().getChildrenExplored().get(i);
+//                double stats = (double) child.getWonPlayouts() / child.getPlayedPlayouts();
+//                System.out.println("    --> " + (i+1) + ". " + child.getPerformedCards() + " | " + child.getWonPlayouts() + "/" + child.getPlayedPlayouts() + " = " + stats);
+//                if (currentRootNode == child)
+//                    best = i;
+//            }
+//            System.out.println("    BEST: " + (best+1) + ". " + currentRootNode.getPerformedCards() + "\n");
+
+
             return Arrays.asList(currentRootNode.getPerformedCards());
         }
         else

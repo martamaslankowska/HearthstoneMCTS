@@ -33,7 +33,7 @@ public class Main {
         Player aggressive = new AggressivePlayer("Aggressive player");
         Player controlling= new ControllingPlayer("Controlling player");
 
-        Game game = new Game(controlling, random);
+        Game game = new Game(MCTS, controlling);
         Player winner = game.gamePlay(true);
         System.out.println("\n" + winner + " WINS THE GAME :)");
 
