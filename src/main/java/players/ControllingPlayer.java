@@ -35,7 +35,6 @@ public class ControllingPlayer extends Player {
             this.warriors.add(new Card(card));
     }
 
-
     @Override
     public Player deepCopy() {
         ControllingPlayer res = new ControllingPlayer();
@@ -59,26 +58,6 @@ public class ControllingPlayer extends Player {
         return res;
     }
 
-
-
-//    @Override
-//    public List<List<Attack>> getPossibleAttacks(Player opponent, int move) {
-//        Player copyOfOpponent = opponent.deepCopy();
-//        List<Attack> controllingAttacks = new ArrayList<>();
-//        Attack attack;
-//        for (Card warrior : warriors) {
-//            if (!copyOfOpponent.getWarriors().isEmpty()) {  // WarriorAttack
-//                // TODO implement possible WarriorAttacks if opponent still has warriors
-//                System.out.println("Implement this part");
-//                attack = new WarriorAttack(warrior, copyOfOpponent.getWarriors().get(-1));
-//            }
-//            else {  // PlayerAttack (if opponent doesn't have warriors any more)
-//                attack = new PlayerAttack(warrior, copyOfOpponent);
-//            }
-//            controllingAttacks.add(attack);
-//        }
-//        return Collections.singletonList(controllingAttacks);
-//    }
 
     public <E> List<List<E>> generatePerm(List<E> original) {
         if (original.size() == 0) {
@@ -135,12 +114,19 @@ public class ControllingPlayer extends Player {
                 globalTotalDamage=totalDamage;
                 controllingAttacks=permutationAttack;
             }
-            if(totalDeadWarriors==globalDeadWarriors&&totalDamage>globalTotalDamage){
+            if(totalDeadWarriors==globalDeadWarriors&&totalDamage>=globalTotalDamage){
+                globalDeadWarriors=totalDeadWarriors;
+                globalTotalDamage=totalDamage;
+                controllingAttacks=permutationAttack;
+            }
+            else if(totalDamage<globalTotalDamage&&permutationAttack.size()==1)
+            {
                 globalDeadWarriors=totalDeadWarriors;
                 globalTotalDamage=totalDamage;
                 controllingAttacks=permutationAttack;
             }
         }
+        System.out.println("CONTR"+controllingAttacks);
         return Collections.singletonList(controllingAttacks);
     }
 

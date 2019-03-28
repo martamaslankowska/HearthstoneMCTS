@@ -23,7 +23,7 @@ public class Tests {
         Player controlling= new ControllingPlayer("Controlling");
 
         simpleAccuracyAverageTest(controlling,randomPlayer,controlling,100,10);
-        playoutNumberImpactTest();
+        //playoutNumberImpactTest();
 
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,0);
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,1);
