@@ -16,14 +16,17 @@ import java.util.List;
 public class MCTS{
 
     public static final double C = 0.7;
-    public final int PLAYOUTS_NO = 100;
+    public int PLAYOUTS_NO = 100;
     public String MCTSPlayerName = "";
+    public MCTSPlayoutHeuristic playoutHeuristic=MCTSPlayoutHeuristic.RANDOM;
 
     private Node rootNode;
 
-    public MCTS(String activePlayerName, int move, Node rootNode) {
+    public MCTS(String activePlayerName, int move, Node rootNode,int playputs,MCTSPlayoutHeuristic playoutHeuristic) {
         this.rootNode = rootNode;
         this.MCTSPlayerName = activePlayerName;
+        this.PLAYOUTS_NO=playputs;
+        this.playoutHeuristic=playoutHeuristic;
     }
 
 
@@ -44,7 +47,7 @@ public class MCTS{
             // Playouts
             int wins = 0;
             for (int j = 0; j<PLAYOUTS_NO; j++) {
-                Player winner = randomPlayoutSimulation(node);
+                Player winner = playoutSimulation(node);
                 if (winner.getName().equals(MCTSPlayerName))
                     wins++;
             }
@@ -119,6 +122,16 @@ public class MCTS{
         return selectedChildToExplore; // selected childrenNode to expand
     }
 
+    private Player playoutSimulation(Node node){
+        switch (playoutHeuristic){
+            case RANDOM: return randomPlayoutSimulation(node);
+            case HEURISTIC_1:return playoutHeuristic1(node);
+            case HEURISTIC_2:return playoutHeuristic2(node);
+            default: return randomPlayoutSimulation(node);
+        }
+    }
+
+
     private Player randomPlayoutSimulation(Node node) {
         RandomPlayer activePlayer = new RandomPlayer(node.getActivePlayer());
         RandomPlayer inactivePlayer = new RandomPlayer(node.getOpponentPlayer());
@@ -166,6 +179,22 @@ public class MCTS{
 
         return getWinner(activePlayer, inactivePlayer);
     }
+
+
+
+    //TODO implement
+    private Player playoutHeuristic1(Node node) {
+        RandomPlayer activePlayer = new RandomPlayer(node.getActivePlayer());
+        return activePlayer;
+    }
+
+    //TODO implement
+    private Player playoutHeuristic2(Node node) {
+        RandomPlayer activePlayer = new RandomPlayer(node.getActivePlayer());
+        return activePlayer;
+    }
+
+
 
     private Player getWinner(RandomPlayer activePlayer, RandomPlayer inactivePlayer) {
         if (activePlayer.getHp() <= 0)

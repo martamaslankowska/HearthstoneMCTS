@@ -3,6 +3,7 @@ package players;
 import attacks.Attack;
 import game.Card;
 import mcts.MCTS;
+import mcts.MCTSPlayoutHeuristic;
 import mcts.Node;
 
 import java.util.ArrayList;
@@ -14,13 +15,17 @@ public class MCTSPlayer extends Player {
     private Node currentRootNode;
     private MCTS tree;
     private int MCTSIterations;
+    private int playputsCount;
+    private MCTSPlayoutHeuristic playoutHeuristic;
 
     private MCTSPlayer() {}
 
-    public MCTSPlayer(String name) {
+    public MCTSPlayer(String name, int iterations, int playouts, MCTSPlayoutHeuristic playoutHeuristic) {
         super(name);
         this.currentRootNode = new Node(this);
-        this.MCTSIterations = 1000;
+        this.MCTSIterations = iterations;
+        this.playputsCount=playouts;
+        this.playoutHeuristic=playoutHeuristic;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class MCTSPlayer extends Player {
         List<Attack> possibleAttacks = new ArrayList<>();
         currentRootNode = new Node("0", move, null, this, opponent);
         while (currentRootNode.getPerformedCards() == null && currentRootNode.getPerformedHit() == null) {
-            tree = new MCTS(this.getName(), move, currentRootNode);
+            tree = new MCTS(this.getName(), move, currentRootNode,playputsCount,playoutHeuristic);
             Node bestChildNode = tree.mcts(MCTSIterations, false);
             if (bestChildNode.getPerformedAttack() != null) {
                 Attack attack = bestChildNode.getPerformedAttack();

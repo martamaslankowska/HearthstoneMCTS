@@ -172,7 +172,6 @@ public abstract class Player implements ITargetWhileAttack {
                 opponent.setHp(opponent.getHp() - selectedAttack.getAttacker().getAttack());
             }
             else {  // WarriorAttack type of attack
-
                 Card warrior = warriors.get(warriors.indexOf(selectedAttack.getAttacker()));
                 Card opponentsWarrior = opponent.getWarriors().get(opponent.getWarriors().indexOf((Card)selectedAttack.getTarget()));
 

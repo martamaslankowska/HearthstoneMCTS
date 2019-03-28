@@ -23,8 +23,13 @@ public class Game {
     private void printActivePlayerState() {
         System.out.println("\nMOVE " + move + " - " + activePlayer.getMana() + "\u27E1");
         System.out.println(activePlayer + " turn:");
+        System.out.println("MANA"+activePlayer.getMana());
         System.out.println("  HAND: " + activePlayer.getHand());
         System.out.println("  WARRIORS: " + activePlayer.getWarriors());
+    }
+
+    private void printInactivePlayerState() {
+        System.out.println("  OPONENT WARRIORS: " + inactivePlayer.getWarriors());
     }
 
 
@@ -52,8 +57,10 @@ public class Game {
             if (gameFinished())
                 break;
 
-            if (verbose)
+            if (verbose) {
                 printActivePlayerState();
+                printInactivePlayerState();
+            }
             List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
             List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
             activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, verbose);
