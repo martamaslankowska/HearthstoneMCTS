@@ -126,7 +126,7 @@ public class ControllingPlayer extends Player {
                 controllingAttacks=permutationAttack;
             }
         }
-        System.out.println("CONTR"+controllingAttacks);
+//        System.out.println("CONTR"+controllingAttacks);
         return Collections.singletonList(controllingAttacks);
     }
 

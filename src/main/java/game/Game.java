@@ -23,7 +23,11 @@ public class Game {
     private void printActivePlayerState() {
         System.out.println("\nMOVE " + move + " - " + activePlayer.getMana() + "\u27E1");
         System.out.println(activePlayer + " turn:");
-        System.out.println("MANA"+activePlayer.getMana());
+//        System.out.println("MANA"+activePlayer.getMana());
+        if (!activePlayer.getHand().isEmpty())
+            System.out.println("  HIT: " + activePlayer.getHand().get(activePlayer.getHand().size()-1));
+        else
+            System.out.println("  EMPTY DECK... (-" + activePlayer.getPunishment() + " hp)");
         System.out.println("  HAND: " + activePlayer.getHand());
         System.out.println("  WARRIORS: " + activePlayer.getWarriors());
     }

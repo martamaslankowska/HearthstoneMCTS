@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MCTS{
 
-    public static final double C = 0.7;
+    public static final double C = 5;
     public int PLAYOUTS_NO = 100;
     public String MCTSPlayerName = "";
     public MCTSPlayoutHeuristic playoutHeuristic=MCTSPlayoutHeuristic.RANDOM;
@@ -140,21 +140,23 @@ public class MCTS{
 
         // Find all warriors which are able to attack in this round
         List<Card> warriorsBeforeAttack = new ArrayList<>();
-        for (Card warrior : activePlayer.getWarriors()) {
-            if (warrior.isBeforeAttack())
-                warriorsBeforeAttack.add(warrior);
+        if (node.getPerformedCards() == null) {  // either while attacking or after hit
+            for (Card warrior : activePlayer.getWarriors()) {
+                if (warrior.isBeforeAttack())
+                    warriorsBeforeAttack.add(warrior);
+            }
+
+            // Attack
+            if (!warriorsBeforeAttack.isEmpty()) {
+                List<List<Attack>> possibleAttacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
+                activePlayer.attackOpponentsCards(inactivePlayer, activePlayer.selectAttacksToPlay(inactivePlayer, possibleAttacks), false);
+            }
+            // Play cards
+            List<List<Card>> cardsToPlay = activePlayer.getPossibleCardsToPlay();
+            activePlayer.playCards(activePlayer.selectCardsToPlay(cardsToPlay), false);
         }
 
-        // Attack
-        if (!warriorsBeforeAttack.isEmpty()) {
-            List<List<Attack>> possibleAttacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
-            activePlayer.attackOpponentsCards(inactivePlayer, activePlayer.selectAttacksToPlay(inactivePlayer, possibleAttacks), false);
-        }
-        // Play cards
-        List<List<Card>> cardsToPlay = activePlayer.getPossibleCardsToPlay();
-        activePlayer.playCards(activePlayer.selectCardsToPlay(cardsToPlay), false);
-
-        // Change active player - swap players
+        // Change active player (swap players) - after cards playing
         RandomPlayer tmpPlayer = activePlayer;
         activePlayer = inactivePlayer;
         inactivePlayer = tmpPlayer;

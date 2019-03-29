@@ -29,11 +29,11 @@ public class Main {
 
     public static void main(String args[]) {
         Player random = new RandomPlayer("Random player");
-        Player MCTS = new MCTSPlayer("MCTS player",1000,100, MCTSPlayoutHeuristic.RANDOM);
+        Player MCTS = new MCTSPlayer("MCTS player",1000,100, MCTSPlayoutHeuristic.RANDOM,true);
         Player aggressive = new AggressivePlayer("Aggressive player");
         Player controlling= new ControllingPlayer("Controlling player");
 
-        Game game = new Game(controlling, random);
+        Game game = new Game(MCTS, controlling);
         Player winner = game.gamePlay(true);
         System.out.println("\n" + winner + " WINS THE GAME :)");
 
