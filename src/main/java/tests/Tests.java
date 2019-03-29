@@ -1,6 +1,8 @@
-package game;
+package tests;
 
 import com.github.sh0nk.matplotlib4j.Plot;
+import game.Card;
+import game.Game;
 import mcts.MCTSPlayoutHeuristic;
 import mcts.Node;
 import players.*;
@@ -47,7 +49,7 @@ public class Tests {
         Player aggressiveOpponent = new AggressivePlayer("Aggressive opponent");
         Player controlling= new ControllingPlayer("Controlling");
 
-        simpleAccuracyAverageTest(controlling,randomPlayer,controlling,100,10);
+        simpleAccuracyAverageTest(MCTSPlayer,randomPlayer,MCTSPlayer,100,1);
         //playoutNumberImpactTest();
 
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,0);

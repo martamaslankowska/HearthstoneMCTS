@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static tests.BFS.treeVisualisationBFS;
+
 public class MCTSPlayer extends Player {
 
     private Node currentRootNode;
@@ -62,21 +64,16 @@ public class MCTSPlayer extends Player {
         while (currentRootNode.getPerformedCards() == null && currentRootNode.getPerformedHit() == null) {
             tree = new MCTS(this.getName(), move, currentRootNode,playputsCount,playoutHeuristic);
             Node bestChildNode = tree.mcts(MCTSIterations, false);
+
+            // running bfs on whole tree - results are saved to file
+            treeVisualisationBFS(currentRootNode, move);
+
             if (bestChildNode.getPerformedAttack() != null) {
                 Attack attack = bestChildNode.getPerformedAttack();
                 possibleAttacks.add(attack);
 
-//                System.out.println("\n    MCTS ATTACK:");
-//                int best = 0;
-//                for (int i=0; i<currentRootNode.getChildrenExplored().size(); i++) {
-//                    Node child = currentRootNode.getChildrenExplored().get(i);
-//                    double stats = (double) child.getWonPlayouts() / child.getPlayedPlayouts();
-//                    System.out.println("    --> " + (i+1) + ". " + child.getPerformedAttack() + " | " + child.getWonPlayouts() + "/" + child.getPlayedPlayouts() + " = " + stats);
-//                    if (bestChildNode == child)
-//                        best = i;
-//                }
-//                System.out.println("    BEST: " + (best+1) + ". " + bestChildNode.getPerformedAttack());
-
+                // printing statistics for all siblings + best one
+                printSiblingsStatistics(true, bestChildNode);
             }
             currentRootNode = bestChildNode;
         }
@@ -86,18 +83,8 @@ public class MCTSPlayer extends Player {
     @Override
     public List<List<Card>> getPossibleCardsToPlay(Player opponent, int move) {
         if (currentRootNode.getPerformedHit() == null) {
-
-//            System.out.println("\n    MCTS CARDS TO PLAY:");
-//            int best = 0;
-//            for (int i=0; i<currentRootNode.getParentNode().getChildrenExplored().size(); i++) {
-//                Node child = currentRootNode.getParentNode().getChildrenExplored().get(i);
-//                double stats = (double) child.getWonPlayouts() / child.getPlayedPlayouts();
-//                System.out.println("    --> " + (i+1) + ". " + child.getPerformedCards() + " | " + child.getWonPlayouts() + "/" + child.getPlayedPlayouts() + " = " + stats);
-//                if (currentRootNode == child)
-//                    best = i;
-//            }
-//            System.out.println("    BEST: " + (best+1) + ". " + currentRootNode.getPerformedCards() + "\n");
-
+            // printing statistics for all siblings + best one
+            printSiblingsStatistics(false, null);
 
             return Arrays.asList(currentRootNode.getPerformedCards());
         }
@@ -113,6 +100,43 @@ public class MCTSPlayer extends Player {
     @Override
     public List<Attack> selectAttacksToPlay(Player opponent, List<List<Attack>> possibleAttacks) {
         return possibleAttacks.get(0);
+    }
+
+
+    private void printSiblingsStatistics(boolean isAttack, Node bestNode) {
+
+        List<Node> children = new ArrayList<>();
+        if (isAttack) {
+            System.out.println("\n    MCTS ATTACKS:");
+            children = currentRootNode.getChildrenExplored();
+        }
+        else {
+            System.out.println("\n    MCTS CARDS TO PLAY:");
+            children = currentRootNode.getParentNode().getChildrenExplored();
+        }
+
+        int best = 0;
+        for (int i=0; i<children.size(); i++) {
+            Node child = children.get(i);
+            double stats = (double) child.getWonPlayouts() / child.getPlayedPlayouts();
+            String statistic = String.format("%.3f", stats*100) + "%";
+            if (isAttack)
+                System.out.println("    --> " + (i+1) + ". " + child.getPerformedAttack() + " | " + child.getWonPlayouts() + "/" + child.getPlayedPlayouts() + " = " + statistic);
+            else
+                System.out.println("    --> " + (i+1) + ". " + child.getPerformedCards() + " | " + child.getWonPlayouts() + "/" + child.getPlayedPlayouts() + " = " + statistic);
+
+            if (isAttack) {
+                if (bestNode == child)
+                    best = i;
+            }
+            else
+                if (currentRootNode == child)
+                    best = i;
+        }
+        if (isAttack)
+            System.out.println("    BEST: " + (best+1) + ". " + bestNode.getPerformedAttack() + "\n");
+        else
+            System.out.println("    BEST: " + (best+1) + ". " + currentRootNode.getPerformedCards() + "\n");
     }
 
 

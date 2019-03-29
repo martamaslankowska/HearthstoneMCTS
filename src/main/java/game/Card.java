@@ -91,7 +91,8 @@ public class Card implements ITargetWhileAttack {
 
     @Override
     public String toString() {
-        return name + " M:(" + mana + "\u27E1) A:" + attack + "\u2694 HP:" + hp + "\u2661";
+//        return name + " M:(" + mana + "\u27E1) A:" + attack + "\u2694 HP:" + hp + "\u2661";
+        return name + " (" + mana + "\u27E1) " + attack + "\u2694 " + hp + "\u2661";
     }
 
     @Override

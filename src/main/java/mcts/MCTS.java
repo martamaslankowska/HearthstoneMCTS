@@ -139,25 +139,23 @@ public class MCTS{
 
         // Find all warriors which are able to attack in this round
         List<Card> warriorsBeforeAttack = new ArrayList<>();
-        if (node.getPerformedAttack() != null) {
+        if (node.getPerformedCards() == null) {  // either while attacking or after hit
             for (Card warrior : activePlayer.getWarriors()) {
                 if (warrior.isBeforeAttack())
                     warriorsBeforeAttack.add(warrior);
             }
-        }
 
-        // Attack
-        if (!warriorsBeforeAttack.isEmpty()) {
-            List<List<Attack>> possibleAttacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
-            activePlayer.attackOpponentsCards(inactivePlayer, activePlayer.selectAttacksToPlay(inactivePlayer, possibleAttacks), false);
-        }
-        // Play cards
-        if (node.getPerformedAttack() != null) {
+            // Attack
+            if (!warriorsBeforeAttack.isEmpty()) {
+                List<List<Attack>> possibleAttacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
+                activePlayer.attackOpponentsCards(inactivePlayer, activePlayer.selectAttacksToPlay(inactivePlayer, possibleAttacks), false);
+            }
+            // Play cards
             List<List<Card>> cardsToPlay = activePlayer.getPossibleCardsToPlay();
             activePlayer.playCards(activePlayer.selectCardsToPlay(cardsToPlay), false);
         }
 
-        // Change active player - swap players
+        // Change active player (swap players) - after cards playing
         RandomPlayer tmpPlayer = activePlayer;
         activePlayer = inactivePlayer;
         inactivePlayer = tmpPlayer;
