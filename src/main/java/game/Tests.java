@@ -5,25 +5,29 @@ import mcts.MCTSPlayoutHeuristic;
 import mcts.Node;
 import players.*;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static game.Main.CARDS;
+import static game.Main.random;
 
 public class Tests {
 
-    public final static int ITERATIONS_NUMBER=300;
+    public final static int ITERATIONS_NUMBER=1000;
     public final static int PLAYOUTS_NUMBER=100;
 
     public static void main(String args[]) {
 
         Player randomPlayer = new RandomPlayer("Random player");
-        Player MCTSPlayer = new MCTSPlayer("MCTS player",ITERATIONS_NUMBER,PLAYOUTS_NUMBER,MCTSPlayoutHeuristic.RANDOM);
+        Player MCTSPlayer = new MCTSPlayer("MCTS player",ITERATIONS_NUMBER,PLAYOUTS_NUMBER,MCTSPlayoutHeuristic.HEURISTIC_1);
         Player aggressivePlayer = new AggressivePlayer("Aggressive player");
         Player aggressiveOpponent = new AggressivePlayer("Aggressive opponent");
         Player controlling= new ControllingPlayer("Controlling");
 
-        simpleAccuracyAverageTest(controlling,randomPlayer,controlling,100,10);
+        //simpleAccuracyAverageTest(MCTSPlayer,randomPlayer,MCTSPlayer,25,1);
         //playoutNumberImpactTest();
+        iterationsTimeMeassure();
 
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,0);
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,1);
@@ -89,6 +93,56 @@ public class Tests {
         simpleAccuracyTest(firstPlayer,secondPlayer,testedPlayer,playsNumber);
     }
 
+    public static void iterationsTimeMeassure() {
+        int step=200;
+        int min=200;
+        int max=400;
+        List<Integer> domain= new ArrayList<>();
+        List<Long> results=new ArrayList<>();
+
+        Player randomPlayer = new RandomPlayer("Random player");
+
+        for(int i=0;i*step+min<=max;i++)
+        {
+            Player MCTSPlayer = new MCTSPlayer("MCTS player",i*step+min,100, MCTSPlayoutHeuristic.RANDOM);
+            domain.add(i*step+min);
+            long startTime = System.currentTimeMillis();
+            simpleAccuracyTest(MCTSPlayer,randomPlayer,MCTSPlayer,20);
+            long endTime = System.currentTimeMillis();
+            long timeElapsed=(endTime-startTime)/20;
+            System.out.println("ITER: "+i*step+min+" TIME: "+timeElapsed);
+            results.add(timeElapsed);
+        }
+
+        Plot plt = Plot.create();
+        plt.plot()
+                .add(domain,results);
+        plt.xlabel("Liczba iteracji");
+        plt.ylabel("Średni czas decyzji");
+        plt.title("Badanie wpłwyu liczby iteracji na średni czas rozgrywki");
+        plt.legend();
+        try {
+            plt.show();
+        }catch (Exception ex){}
+
+        saveToFile("iter_time_"+System.currentTimeMillis(),domain.toArray(),results.toArray());
+
+    }
+
+    public static void saveToFile(String filename, Object [] firstCollection, Object [] secondCollection){
+        try{
+            FileWriter fileWriter = new FileWriter(filename);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            int size=firstCollection.length;
+            for (int i=0;i<size;i++){
+                printWriter.println(firstCollection[i]+","+secondCollection[i]);
+            }
+            printWriter.close();
+        }catch (Exception ex){
+            System.out.println("FILE SAVING EXCEPTION");
+        }
+
+    }
     public static void playoutNumberImpactTest(){
         int step=200;
         int min=200;
@@ -137,6 +191,12 @@ public class Tests {
     * Spadek many działa korzystnie na agresywnego
     * Spadek many działa niekorzystnie na kontrolującego
     *
+    * 300 interacji:
+    * heuristic 1 vs random 80%
+    * random heuristic vs random 80% :)
+    * 1000 iteracji:
+    * random heuristic vs random 92%
+    * heuristic 1 vs random 76% :(
     * */
 
 //    public static void testMCTSFindingChildNodes(int move, Player activePlayer, Player opponentPlayer) {

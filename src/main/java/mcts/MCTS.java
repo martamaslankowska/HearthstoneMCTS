@@ -2,6 +2,7 @@ package mcts;
 
 import attacks.Attack;
 import game.Card;
+import players.AggressivePlayer;
 import players.Player;
 import players.RandomPlayer;
 
@@ -184,8 +185,51 @@ public class MCTS{
 
     //TODO implement
     private Player playoutHeuristic1(Node node) {
-        RandomPlayer activePlayer = new RandomPlayer(node.getActivePlayer());
-        return activePlayer;
+        Player activePlayer = new RandomPlayer(node.getActivePlayer());
+        Player inactivePlayer = new AggressivePlayer(node.getOpponentPlayer());
+        int move = node.getMove();
+
+        // Find all warriors which are able to attack in this round
+        List<Card> warriorsBeforeAttack = new ArrayList<>();
+        for (Card warrior : activePlayer.getWarriors()) {
+            if (warrior.isBeforeAttack())
+                warriorsBeforeAttack.add(warrior);
+        }
+
+        // Attack
+        if (!warriorsBeforeAttack.isEmpty()) {
+            List<List<Attack>> possibleAttacks = activePlayer.getPossibleAttacks(inactivePlayer, move);
+            activePlayer.attackOpponentsCards(inactivePlayer, activePlayer.selectAttacksToPlay(inactivePlayer, possibleAttacks), false);
+        }
+        // Play cards
+        List<List<Card>> cardsToPlay = activePlayer.getPossibleCardsToPlay();
+        activePlayer.playCards(activePlayer.selectCardsToPlay(cardsToPlay), false);
+
+        // Change active player - swap players
+        Player tmpPlayer = activePlayer;
+        activePlayer = inactivePlayer;
+        inactivePlayer = tmpPlayer;
+
+
+        while(getWinner(activePlayer, inactivePlayer) == null) {
+            move++;
+            activePlayer.updateMana(move);
+            activePlayer.hit();
+            if (getWinner(activePlayer, inactivePlayer) != null)
+                return getWinner(activePlayer, inactivePlayer);
+
+            List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
+            List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
+            activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, false);
+            activePlayer.playCards(selectedCardsToPlay, false);
+
+            // Change active player - swap players
+            Player deactivatedPlayer = activePlayer;
+            activePlayer = inactivePlayer;
+            inactivePlayer = deactivatedPlayer;
+        }
+
+        return getWinner(activePlayer, inactivePlayer);
     }
 
     //TODO implement
@@ -196,7 +240,7 @@ public class MCTS{
 
 
 
-    private Player getWinner(RandomPlayer activePlayer, RandomPlayer inactivePlayer) {
+    private Player getWinner(Player activePlayer, Player inactivePlayer) {
         if (activePlayer.getHp() <= 0)
             return inactivePlayer;
         if (inactivePlayer.getHp() <= 0)
