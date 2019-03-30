@@ -19,8 +19,8 @@ public class CTests {
     }
 
     public static void cTest() {
-        double step=0.2;
-        double min=0.2;
+        double step=0.1;
+        double min=0.1;
         double max=1;
         List<Double> domain= new ArrayList<>();
         List<Double> results=new ArrayList<>();
@@ -48,13 +48,13 @@ public class CTests {
         plt.legend();
         long saveTime=System.currentTimeMillis();
         try {
-            plt.savefig("tests/results/cResults/c_impact_"+saveTime+".png");
+            plt.savefig("c_impact_"+saveTime+".png");
             plt.show();
         }catch (Exception ex){}
 
 
 
-        Tests.saveToFile("tests/results/cResults/c_impact_"+saveTime,domain.toArray(),results.toArray());
+        Tests.saveToFile("c_impact_"+saveTime,domain.toArray(),results.toArray());
 
     }
 }

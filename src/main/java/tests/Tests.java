@@ -66,7 +66,7 @@ public class Tests {
         Player aggressivePlayer = new AggressivePlayer("Aggressive player");
         Player aggressiveOpponent = new AggressivePlayer("Aggressive opponent");
         Player controlling= new ControllingPlayer("Controlling");
-        simpleAccuracyTest(MCTSPlayer,randomPlayer,MCTSPlayer,100);
+        simpleAccuracyTest(randomPlayer,MCTSPlayer,MCTSPlayer,100);
 
         //playoutNumberImpactTest();
         //iterationsImpactTimeTest();
