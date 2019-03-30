@@ -181,18 +181,18 @@ public class ControllingPlayer extends Player {
 
     @Override
     public List<Card> selectCardsToPlay(List<List<Card>> possibleCardsToPlay) {
-        List<Card> cardsWithGreatestAttack = new ArrayList<>();
-        int greatestAttackPower = 0;
+        List<Card> cardsWithGreatestHp = new ArrayList<>();
+        int greatestHpPower = 0;
         for (List<Card> cards : possibleCardsToPlay) {
-            int overallAttackPower = 0;
+            int overallHpPower = 0;
             for (Card warrior : cards)
-                overallAttackPower += warrior.getHp();
-            if (overallAttackPower > greatestAttackPower) {
-                cardsWithGreatestAttack = cards;
-                greatestAttackPower = overallAttackPower;
+                overallHpPower += warrior.getHp();
+            if (overallHpPower > greatestHpPower) {
+                cardsWithGreatestHp = cards;
+                greatestHpPower = overallHpPower;
             }
         }
-        return cardsWithGreatestAttack;
+        return cardsWithGreatestHp;
     }
 
     @Override

@@ -68,14 +68,14 @@ public class MCTSPlayer extends Player {
             Node bestChildNode = tree.mcts(MCTSIterations, false);
 
             // running bfs on whole tree - results are saved to file
-            treeVisualisationBFS(currentRootNode, move);
+            //treeVisualisationBFS(currentRootNode, move);
 
             if (bestChildNode.getPerformedAttack() != null) {
                 Attack attack = bestChildNode.getPerformedAttack();
                 possibleAttacks.add(attack);
 
                 // printing statistics for all siblings + best one
-                printSiblingsStatistics(true, bestChildNode);
+                //printSiblingsStatistics(true, bestChildNode);
             }
             currentRootNode = bestChildNode;
         }

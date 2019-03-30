@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MCTS{
 
-    public static final double C = 5;
+    public static double C = 5;
     public int PLAYOUTS_NO = 100;
     public String MCTSPlayerName = "";
     public MCTSPlayoutHeuristic playoutHeuristic=MCTSPlayoutHeuristic.RANDOM;

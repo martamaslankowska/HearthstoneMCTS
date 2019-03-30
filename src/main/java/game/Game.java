@@ -1,6 +1,8 @@
 package game;
 
 import attacks.Attack;
+import mctstemplate.MCTPlayer;
+import players.MCTSPlayer;
 import players.Player;
 
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ public class Game {
     private Player activePlayer;
     private Player inactivePlayer;
     private int move;
+    public List<Long> decisionTimes=new ArrayList<>();
 
 
     public Game(Player activePlayer, Player inactivePlayer) {
@@ -65,8 +68,20 @@ public class Game {
                 printActivePlayerState();
                 printInactivePlayerState();
             }
-            List<Attack> selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
-            List<Card> selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
+            List<Attack> selectedAttacks;
+            List<Card> selectedCardsToPlay;
+            if(activePlayer instanceof MCTSPlayer)
+            {
+                long startTime=System.currentTimeMillis();
+                selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
+                selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
+                long endTime=System.currentTimeMillis();
+                decisionTimes.add(endTime-startTime);
+            }
+            else {
+                selectedAttacks = activePlayer.selectAttacksToPlay(inactivePlayer, activePlayer.getPossibleAttacks(inactivePlayer, move));
+                selectedCardsToPlay = activePlayer.selectCardsToPlay(activePlayer.getPossibleCardsToPlay(inactivePlayer, move));
+            }
             activePlayer.attackOpponentsCards(inactivePlayer, selectedAttacks, verbose);
             activePlayer.playCards(selectedCardsToPlay, verbose);
             changeActivePlayer();

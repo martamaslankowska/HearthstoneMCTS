@@ -3,6 +3,7 @@ package tests;
 import com.github.sh0nk.matplotlib4j.Plot;
 import game.Card;
 import game.Game;
+import mcts.MCTS;
 import mcts.MCTSPlayoutHeuristic;
 import mcts.Node;
 import players.*;
@@ -16,7 +17,7 @@ import static game.Main.random;
 
 public class Tests {
 
-    public final static int ITERATIONS_NUMBER=300;
+    public final static int ITERATIONS_NUMBER=1000;
     public final static int PLAYOUTS_NUMBER=100;
 
     public static void simpleTests() {
@@ -43,6 +44,20 @@ public class Tests {
         System.out.println("\n" + testedPlayer.getName() + " won " + wins + "/" + iterations + " times");
     }
 
+    public static void saveToFile(String filename, Object [] firstCollection, Object [] secondCollection){
+        try{
+            FileWriter fileWriter = new FileWriter(filename);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            int size=firstCollection.length;
+            for (int i=0;i<size;i++){
+                printWriter.println(firstCollection[i]+","+secondCollection[i]);
+            }
+            printWriter.close();
+        }catch (Exception ex){
+            System.out.println("FILE SAVING EXCEPTION");
+        }
+
+    }
 
     public static void main(String args[]) {
 
@@ -51,12 +66,11 @@ public class Tests {
         Player aggressivePlayer = new AggressivePlayer("Aggressive player");
         Player aggressiveOpponent = new AggressivePlayer("Aggressive opponent");
         Player controlling= new ControllingPlayer("Controlling");
-
-
-        simpleAccuracyAverageTest(MCTSPlayer,randomPlayer,MCTSPlayer,25,1);
+        simpleAccuracyTest(MCTSPlayer,randomPlayer,MCTSPlayer,100);
 
         //playoutNumberImpactTest();
-        //iterationsTimeMeassure();
+        //iterationsImpactTimeTest();
+        //playoutNumberTimeTest();
 
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,0);
 //        manaImpactTest(aggressivePlayer,randomPlayer,aggressivePlayer,1000,1);
@@ -122,57 +136,8 @@ public class Tests {
         simpleAccuracyTest(firstPlayer,secondPlayer,testedPlayer,playsNumber);
     }
 
-    public static void iterationsTimeMeassure() {
-        int step=200;
-        int min=200;
-        int max=400;
-        List<Integer> domain= new ArrayList<>();
-        List<Long> results=new ArrayList<>();
 
-        Player randomPlayer = new RandomPlayer("Random player");
-
-        for(int i=0;i*step+min<=max;i++)
-        {
-            Player MCTSPlayer = new MCTSPlayer("MCTS player",i*step+min,100, MCTSPlayoutHeuristic.RANDOM,false);
-            domain.add(i*step+min);
-            long startTime = System.currentTimeMillis();
-            simpleAccuracyTest(MCTSPlayer,randomPlayer,MCTSPlayer,20);
-            long endTime = System.currentTimeMillis();
-            long timeElapsed=(endTime-startTime)/20;
-            System.out.println("ITER: "+i*step+min+" TIME: "+timeElapsed);
-            results.add(timeElapsed);
-        }
-
-        Plot plt = Plot.create();
-        plt.plot()
-                .add(domain,results);
-        plt.xlabel("Liczba iteracji");
-        plt.ylabel("Średni czas decyzji");
-        plt.title("Badanie wpłwyu liczby iteracji na średni czas rozgrywki");
-        plt.legend();
-        try {
-            plt.show();
-        }catch (Exception ex){}
-
-        saveToFile("iter_time_"+System.currentTimeMillis(),domain.toArray(),results.toArray());
-
-    }
-
-    public static void saveToFile(String filename, Object [] firstCollection, Object [] secondCollection){
-        try{
-            FileWriter fileWriter = new FileWriter(filename);
-            PrintWriter printWriter = new PrintWriter(fileWriter);
-            int size=firstCollection.length;
-            for (int i=0;i<size;i++){
-                printWriter.println(firstCollection[i]+","+secondCollection[i]);
-            }
-            printWriter.close();
-        }catch (Exception ex){
-            System.out.println("FILE SAVING EXCEPTION");
-        }
-
-    }
-    public static void playoutNumberImpactTest(){
+    public static void playoutNumberScoreTest(){
         int step=200;
         int min=200;
         int max=1000;
@@ -191,7 +156,7 @@ public class Tests {
         Plot plt = Plot.create();
         plt.plot()
                 .add(domain,results);
-        plt.xlabel("Liczba playotów");
+        plt.xlabel("Liczba playoutów");
         plt.ylabel("Accuracy");
         plt.title("Playouts impact test");
         plt.legend();
@@ -199,6 +164,8 @@ public class Tests {
             plt.show();
         }catch (Exception ex){}
     }
+
+
 
     public static void playingOrderImpactTest(int numberOfPlays, int averageRepeats){
 
